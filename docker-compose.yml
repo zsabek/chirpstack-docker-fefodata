@@ -1,5 +1,6 @@
 networks:
-  default: 
+  default:
+    external: true
     name: chirpstack_net
   shared:
     external: true
