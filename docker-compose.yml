@@ -1,20 +1,4 @@
 #####################################
-# Networks, Volumes
-#####################################
-networks:
-  fefodata_net:
-    external: true
-    name: fefodata_net
-  shared_stack_net:
-    external: true
-    name: shared_stack_net
-  backend-seatable-net:
-    external: true
-    name: backend-seatable-net
-volumes:
-  postgresqldata:
-  redisdata:
-#####################################
 # Konténerek
 #####################################
 services:
@@ -114,3 +98,19 @@ services:
     networks:
     - fefodata_net
     - shared_stack_net
+#####################################
+# Networks, Volumes
+#####################################
+networks:
+  fefodata_net:
+    external: true
+    name: fefodata_net
+  shared_stack_net:
+    external: true
+    name: shared_stack_net
+  backend-seatable-net:
+    external: true
+    name: backend-seatable-net
+volumes:
+  postgresqldata:
+  redisdata:
