@@ -1,16 +1,28 @@
+#####################################
+# Networks, Volumes
+#####################################
 networks:
-  default:
+  fefodata_net:
     external: true
-    name: chirpstack_net
-  shared:
+    name: fefodata_net
+  shared_stack_net:
     external: true
     name: shared_stack_net
+  backend-seatable-net:
+    external: true
+    name: backend-seatable-net
+volumes:
+  postgresqldata:
+  redisdata:
+#####################################
+# Konténerek
+#####################################
 services:
   chirpstack:
     image: chirpstack/chirpstack:4
     labels:
       caddy: chirpstack.fefodata.com
-      caddy.revers_proxy: "{{upstreams 8080}}"
+      caddy.reverse_proxy: "{{upstreams 8080}}"
     command: -c /etc/chirpstack
     restart: unless-stopped
     volumes:
@@ -23,11 +35,11 @@ services:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
       - POSTGRESQL_HOST=postgres
-    expose:
-      - "8080"
+    #expose:
+    #  - "8080" #Proxyzott port
     networks:
-      - default
-      - shared
+    - fefodata_net
+    - shared_stack_net
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -42,6 +54,8 @@ services:
       - INTEGRATION__MQTT__COMMAND_TOPIC_TEMPLATE=eu868/gateway/{{ .GatewayID }}/command/#
     depends_on:
       - mosquitto
+    networks:
+    - fefodata_net
   
   chirpstack-gateway-bridge-basicstation:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -53,6 +67,8 @@ services:
       - ./configuration/chirpstack-gateway-bridge:/etc/chirpstack-gateway-bridge
     depends_on:
       - mosquitto
+    networks:
+    - fefodata_net
 
   chirpstack-rest-api:
     image: chirpstack/chirpstack-rest-api:4
@@ -63,8 +79,8 @@ services:
     depends_on:
       - chirpstack
     networks:
-      - default
-      - shared
+    - fefodata_net
+    - shared_stack_net
 
   postgres:
     image: postgres:14-alpine
@@ -76,6 +92,8 @@ services:
       - POSTGRES_USER=chirpstack
       - POSTGRES_PASSWORD=chirpstack
       - POSTGRES_DB=chirpstack
+    networks:
+    - fefodata_net
 
   redis:
     image: redis:7-alpine
@@ -83,6 +101,8 @@ services:
     command: redis-server --save 300 1 --save 60 100 --appendonly no
     volumes:
       - redisdata:/data
+    networks:
+    - fefodata_net
 
   mosquitto:
     image: eclipse-mosquitto:2
@@ -92,9 +112,5 @@ services:
     volumes: 
       - ./configuration/mosquitto/config/:/mosquitto/config/
     networks:
-      - default
-      - shared
-
-volumes:
-  postgresqldata:
-  redisdata:
+    - fefodata_net
+    - shared_stack_net
