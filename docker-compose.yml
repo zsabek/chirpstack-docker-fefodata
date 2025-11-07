@@ -22,8 +22,8 @@ services:
     #expose:
     #  - "8080" #Proxyzott port
     networks:
-    - fefodata_net
-    - shared_stack_net
+    - fefodata-net
+    - shared-stack-net
 
   chirpstack-gateway-bridge:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -39,7 +39,7 @@ services:
     depends_on:
       - mosquitto
     networks:
-    - fefodata_net
+    - fefodata-net
   
   chirpstack-gateway-bridge-basicstation:
     image: chirpstack/chirpstack-gateway-bridge:4
@@ -52,7 +52,7 @@ services:
     depends_on:
       - mosquitto
     networks:
-    - fefodata_net
+    - fefodata-net
 
   chirpstack-rest-api:
     image: chirpstack/chirpstack-rest-api:4
@@ -63,8 +63,8 @@ services:
     depends_on:
       - chirpstack
     networks:
-    - fefodata_net
-    - shared_stack_net
+    - fefodata-net
+    - shared-stack-net
 
   postgres:
     image: postgres:14-alpine
@@ -77,7 +77,7 @@ services:
       - POSTGRES_PASSWORD=chirpstack
       - POSTGRES_DB=chirpstack
     networks:
-    - fefodata_net
+    - fefodata-net
 
   redis:
     image: redis:7-alpine
@@ -86,7 +86,7 @@ services:
     volumes:
       - redisdata:/data
     networks:
-    - fefodata_net
+    - fefodata-net
 
   mosquitto:
     image: eclipse-mosquitto:2
@@ -96,18 +96,18 @@ services:
     volumes: 
       - ./configuration/mosquitto/config/:/mosquitto/config/
     networks:
-    - fefodata_net
-    - shared_stack_net
+    - fefodata-net
+    - shared-stack-net
 #####################################
 # Networks, Volumes
 #####################################
 networks:
-  fefodata_net:
+  fefodata-net:
     external: true
-    name: fefodata_net
-  shared_stack_net:
+    name: fefodata-net
+  shared-stack-net:
     external: true
-    name: shared_stack_net
+    name: shared-stack-net
   backend-seatable-net:
     external: true
     name: backend-seatable-net
