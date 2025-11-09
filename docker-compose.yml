@@ -4,9 +4,6 @@
 services:
   chirpstack:
     image: chirpstack/chirpstack:4
-    labels:
-      caddy: chirpstack.fefodata.com
-      caddy.reverse_proxy: "{{upstreams 8080}}"
     command: -c /etc/chirpstack
     restart: unless-stopped
     volumes:
@@ -19,8 +16,8 @@ services:
       - MQTT_BROKER_HOST=mosquitto
       - REDIS_HOST=redis
       - POSTGRESQL_HOST=postgres
-    #expose:
-    #  - "8080" #Proxyzott port
+    ports:
+      - "8080:8080"
     networks:
     - fefodata-net
     - shared-stack-net
@@ -108,9 +105,6 @@ networks:
   shared-stack-net:
     external: true
     name: shared-stack-net
-  backend-seatable-net:
-    external: true
-    name: backend-seatable-net
 volumes:
   postgresqldata:
   redisdata:
